@@ -51,7 +51,7 @@ unaryToBase predBase padding xs = xs >>= (\char => padWithZero padding (convertB
 
 ||| Convert a string into a list of Nat each representing a number between 0 and 255
 stringToBase256 : String -> List Nat
-stringToBase256 x = map PE_toNat_abb9c3f3 $ unpack x
+stringToBase256 x = map (toNat . ord) $ unpack x
 
 ||| This in effect, transforms a list of numbers in a base into a unary base (Nat)
 listBaseToNat : List (Fin base) -> Nat
