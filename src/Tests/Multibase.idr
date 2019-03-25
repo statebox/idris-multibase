@@ -1,5 +1,5 @@
 
-module Test.Multibase
+module Tests.Multibase
 
 import Data.Multibase.Multibase
 import Specdris.Spec

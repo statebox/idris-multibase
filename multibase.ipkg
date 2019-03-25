@@ -1,0 +1,13 @@
+package multibase
+
+sourcedir = src
+
+modules = Data.Multibase.Convert
+        , Data.Multibase.Lib
+        , Data.Multibase
+
+tests = Tests.Multibase        
+
+pkgs = contrib, specdris
+
+opts = "--total"
