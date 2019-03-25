@@ -18,7 +18,7 @@ data BaseSymbol : Nat -> Type where
   SBase8     : BaseSymbol 8
   SBase10    : BaseSymbol 10
   SBase16    : BaseSymbol 16
-  SBase32    : BaseSymbol 32
+  SBase32Hex : BaseSymbol 32
   SBase58btc : BaseSymbol 58
   SBase64    : BaseSymbol 64
 
@@ -28,7 +28,7 @@ Uninhabited (BaseSymbol Z) where
   uninhabited SBase8 impossible
   uninhabited SBase10 impossible
   uninhabited SBase16 impossible
-  uninhabited SBase32 impossible
+  uninhabited SBase32Hex impossible
   uninhabited SBase58btc impossible
   uninhabited SBase64 impossible
 
@@ -38,7 +38,7 @@ Show (BaseSymbol n) where
   show SBase8     = "octal"
   show SBase10    = "decimal"
   show SBase16    = "hexadecimal"
-  show SBase32    = "32bits"
+  show SBase32Hex = "32bitshex"
   show SBase58btc = "58bits"
   show SBase64    = "64bits"
 
@@ -48,7 +48,7 @@ Eq (BaseSymbol n) where
   SBase8     == SBase8     = True
   SBase10    == SBase10    = True
   SBase16    == SBase16    = True
-  SBase32    == SBase32    = True
+  SBase32Hex == SBase32Hex = True
   SBase58btc == SBase58btc = True
   SBase64    == SBase64    = True
   _ == _ = False
@@ -59,7 +59,7 @@ dictionary SBase2     = fromList $ unpack "01"
 dictionary SBase8     = fromList $ unpack "01234567"
 dictionary SBase10    = fromList $ unpack "0123456789"
 dictionary SBase16    = fromList $ unpack "0123456789abcdef"
-dictionary SBase32    = fromList $ unpack "0123456789abcdefghijklmnopqrstuv"
+dictionary SBase32Hex = fromList $ unpack "0123456789abcdefghijklmnopqrstuv"
 dictionary SBase58btc = fromList $ unpack "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 dictionary SBase64    = fromList $ unpack "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
@@ -69,7 +69,7 @@ parseBaseChar '0' = Right (2 ** SBase2)
 parseBaseChar '7' = Right (8 ** SBase8)
 parseBaseChar '9' = Right (10 ** SBase10)
 parseBaseChar 'f' = Right (16 ** SBase16)
-parseBaseChar 'b' = Right (32 ** SBase32)
+parseBaseChar 'v' = Right (32 ** SBase32Hex)
 parseBaseChar 'z' = Right (58 ** SBase58btc)
 parseBaseChar 'm' = Right (64 ** SBase64)
 parseBaseChar c   = Left (UnknownBase c)
@@ -80,7 +80,7 @@ baseChar SBase2     = '0'
 baseChar SBase8     = '7'
 baseChar SBase10    = '9'
 baseChar SBase16    = 'f'
-baseChar SBase32    = 'b'
+baseChar SBase32Hex = 'v'
 baseChar SBase58btc = 'z'
 baseChar SBase64    = 'm'
 

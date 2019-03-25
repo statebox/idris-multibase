@@ -1,9 +1,9 @@
 
 module Tests.Multibase
 
-import Data.Multibase
+import Data.Multibase.Multibase
 import Specdris.Spec
---import Data.CharMultibase
+import Data.Multibase.Char
 import Data.Vect
 
 tests : IO ()
@@ -23,9 +23,11 @@ tests = spec $ do
     it "should encode in base 16" $ do
       encode "yes mani !" SBase16 `shouldBe` "f796573206d616e692021"
     it "should encode in base 32" $ do
-      encode "yes mani !" SBase32 `shouldBe` "vf5in683dc5n6i811"
+      encode "yes mani !" SBase32Hex `shouldBe` "vf5in683dc5n6i811"
     it "should encode in base 58btc" $ do
       encode "yes mani !" SBase58btc `shouldBe` "z7paNL19xttacUY"
+    it "should encode in base 64" $ do
+      encode "yes mani !" SBase58btc `shouldBe` "meWVzIG1hbmkgIQ"
 
   describe "Multibase decoding" $ do
     it "should decode in base 2" $ do
@@ -35,13 +37,13 @@ tests = spec $ do
     it "should decode in base 10" $ do
       decodeStr "9573277761329450583662625" `shouldBe` Right "yes mani !"
     it "should decode in base 16" $ do
-      decodeStr "9573277761329450583662625" `shouldBe` Right "yes mani !"
+      decodeStr "f796573206d616e692021" `shouldBe` Right "yes mani !"
     it "should decode in base 32" $ do
-      decodeStr "9573277761329450583662625" `shouldBe` Right "yes mani !"
+      decodeStr "vf5in683dc5n6i811" `shouldBe` Right "yes mani !"
     it "should decode in base 58" $ do
-      decodeStr "9573277761329450583662625" `shouldBe` Right "yes mani !"
+      decodeStr "z7paNL19xttacUY" `shouldBe` Right "yes mani !"
     it "should decode in base 64" $ do
-      decodeStr "9573277761329450583662625" `shouldBe` Right "yes mani !"
+      decodeStr "meWVzIG1hbmkgIQ" `shouldBe` Right "yes mani !"
 
   describe "Two way coding" $ do
     it "should encode and decode base 2" $ do
@@ -53,7 +55,7 @@ tests = spec $ do
     it "should encode and decode base 16" $ do
       decodeStr (encode "abcdefg" SBase16) `shouldBe` Right "abcdefg"
     it "should encode and decode base 32" $ do
-      decodeStr (encode "abcdefg" SBase32) `shouldBe` Right "abcdefg"
+      decodeStr (encode "abcdefg" SBase32Hex) `shouldBe` Right "abcdefg"
     it "should encode and decode base 58" $ do
       decodeStr (encode "abcdefg" SBase58btc) `shouldBe` Right "abcdefg"
     it "should encode and decode base 64" $ do
