@@ -1,9 +1,9 @@
 
-module Test.Multibase
+module Tests.Multibase
 
 import Data.Multibase
 import Specdris.Spec
-import Data.CharMultibase
+--import Data.CharMultibase
 import Data.Vect
 
 tests : IO ()
@@ -23,7 +23,7 @@ tests = spec $ do
     it "should encode in base 16" $ do
       encode "yes mani !" SBase16 `shouldBe` "f796573206d616e692021"
     it "should encode in base 32" $ do
-      encode "yes mani !" SBase32 `shouldBe` "bpfsxgidnmfxgsibb"
+      encode "yes mani !" SBase32 `shouldBe` "vf5in683dc5n6i811"
     it "should encode in base 58btc" $ do
       encode "yes mani !" SBase58btc `shouldBe` "z7paNL19xttacUY"
 
