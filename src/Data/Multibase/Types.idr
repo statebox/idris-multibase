@@ -1,6 +1,6 @@
 module Data.Multibase.Types
 
-export
+public export
 data MultibaseError char = UnknownBase char 
                          | IllegalSymbolFound char 
                          | DigestEmpty 

@@ -6,7 +6,9 @@ modules = Data.Multibase.Convert
         , Data.Multibase.Lib
         , Data.Multibase
 
-tests = Tests.Multibase        
+        , Tests.Multibase
+
+tests = Tests.Multibase.testSuite
 
 pkgs = contrib, specdris
 

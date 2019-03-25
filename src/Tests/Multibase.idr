@@ -1,12 +1,14 @@
 
 module Tests.Multibase
 
+import Data.Vect
 import Data.Multibase
 import Specdris.Spec
-import Data.Vect
 
-tests : IO ()
-tests = spec $ do 
+%access export
+
+testSuite : IO ()
+testSuite = spec $ do 
 
   describe "Multibase encoding" $ do
     it "should encode in base 2" $ do
@@ -55,3 +57,4 @@ tests = spec $ do
       decode (encode SBase58btc "abcdefg") `shouldBe` Right "abcdefg"
     it "should encode and decode base 64" $ do
       decode (encode SBase64 "abcdefg") `shouldBe` Right "abcdefg"
+
