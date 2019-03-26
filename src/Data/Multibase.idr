@@ -15,9 +15,9 @@ decodeMulti : String -> Either (MultibaseError Char) (b ** (MultibaseDigest b))
 decodeMulti = parseSymbols . unpack
 
 encode : String -> BaseSymbol n -> String
-encode str base {n = Z} impossible
-encode str base {n = (S k)} = let inBase = unaryToBase k (baseLength $ S k) $ stringToBase256 str in
-                                  toString base inBase
+encode str base {n=Z} impossible
+encode str base {n=S k} = let inBase = unaryToBase k (baseLength $ S k) $ stringToBase256 str in
+                          toString base inBase
 
 reencode : MultibaseDigest b -> String
 reencode (MkMultibaseDigest base digest) = pack $ map (`index` dictionary base) digest
