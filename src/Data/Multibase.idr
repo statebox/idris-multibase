@@ -2,8 +2,10 @@
 module Data.Multibase
 
 import Data.Vect
+import Data.Bits
 import public Data.Multibase.Lib
 import Data.Multibase.Convert
+import Debug.Trace
 
 %access export
 %default total
@@ -16,8 +18,8 @@ decodeMulti = parseSymbols . unpack
 
 encode : String -> BaseSymbol n -> String
 encode str base {n=Z} impossible
-encode str base {n=S k} = let inBase = unaryToBase k (baseLength $ S k) $ stringToBase256 str in
-                          toString base inBase
+encode str base {n=S k} = let inBase = unaryToBase k (baseLength $ S k) $ stringToBase256 str
+                           in toString base inBase
 
 reencode : MultibaseDigest b -> String
 reencode (MkMultibaseDigest base digest) = pack $ map (`index` dictionary base) digest
@@ -29,12 +31,14 @@ groupBy len xs = if length xs < len then [xs] else let (head, tail) = splitAt le
 fromBaseToNat : List (Fin b) -> Nat
 fromBaseToNat xs {b} = snd $ foldl (\(index, sum), val => (S index, val * (b `power` index) + sum)) (Z, Z) $ map finToNat $ reverse xs
 
+fin256ToChar : Fin 256 -> Char
+fin256ToChar = chr . toIntNat . finToNat
 
 decodeFromBase : List (Fin b) -> String
-decodeFromBase xs {b} = let digitLength = baseLength b 
-                            digitList = groupBy digitLength xs 
-                            natList = map fromBaseToNat digitList in
-                            pack $ map (chr . toIntNat) natList
+decodeFromBase xs {b} = let dropZeroes = dropWhile notZero xs
+                            zeroes = List.replicate (length xs `minus` length dropZeroes) '0'
+                         in show (convertBaseNat 255 $ toNat (listBaseToNat dropZeroes))
+                         --in pack $ (map fin256ToChar) $ (convertBaseNat 255 (toNat (listBaseToNat dropZeroes)))
 
 decodeStr : String -> Either (MultibaseError Char) String
 decodeStr str = case decodeMulti str of

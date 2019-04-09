@@ -1,7 +1,7 @@
 
 module Tests.Multibase
 
-import Data.Multibase.Multibase
+import Data.Multibase
 import Specdris.Spec
 import Data.Multibase.Char
 import Data.Vect

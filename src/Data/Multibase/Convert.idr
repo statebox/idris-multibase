@@ -3,6 +3,7 @@ module Data.Multibase.Convert
 
 import Data.Vect
 import Data.Nat.DivMod
+import Debug.Trace
 
 %access export
 %default total 
@@ -25,13 +26,13 @@ natLteFin {m} (S k) (LTESucc lte) = rewrite lteEqPlus lte in mkFin {n=S k} {m=mi
 ||| Convert a natural number into the selected base (actually the predecessor of the base). The output
 ||| is a list of natural numbers smaller than the base which acts as an upper bound. LSB
 convertBaseNat : (predBase : Nat) -> Nat -> List (Fin (S predBase))
-convertBaseNat predBase n = convertBaseList predBase n []
+convertBaseNat predBase n = trace ("converting " ++ show n) $ convertBaseList predBase n []
   where 
     convertBaseList : (predBase : Nat) -> Nat -> List (Fin (S predBase)) -> List (Fin (S predBase))
     convertBaseList predBase num acc with (num `divMod` predBase)
-      convertBaseList predBase (remainder + (    Z * (S predBase))) acc | (MkDivMod     Z remainder remainderSmall) = 
+      convertBaseList predBase (remainder + (    Z * (S predBase))) acc | (MkDivMod     Z remainder remainderSmall) = trace "convertBase zero" $
         (natLteFin remainder remainderSmall) :: acc
-      convertBaseList predBase (remainder + ((S q) * (S predBase))) acc | (MkDivMod (S q) remainder remainderSmall) = 
+      convertBaseList predBase (remainder + ((S q) * (S predBase))) acc | (MkDivMod (S q) remainder remainderSmall) = trace "convertBase Non zero" $
         -- This assert_total is a bit frustrating, we can see that  q is smaller than r + q * b but idris can't figure it out
         assert_total $ convertBaseList predBase (S q) ((natLteFin remainder remainderSmall) :: acc)
 
@@ -46,7 +47,7 @@ unaryToBase : (predBase : Nat) -> Nat -> List Nat -> List (Fin (S predBase))
 unaryToBase predBase padding xs = integerToBase (charsToInteger xs) []
   where
   charsToInteger : List Nat -> Integer
-  charsToInteger = foldl (\acc, char => acc*256 + toIntegerNat char) 0
+  charsToInteger = foldl (\acc, char => acc * 256 + toIntegerNat char) 0
   base : Integer
   base = toIntegerNat predBase + 1 
   integerToBase : Integer -> List (Fin (S predBase)) -> List (Fin (S predBase))
@@ -58,11 +59,24 @@ unaryToBase predBase padding xs = integerToBase (charsToInteger xs) []
 stringToBase256 : String -> List Nat
 stringToBase256 x = map (toNat . ord) $ unpack x
 
-||| This in effect, transforms a list of numbers in a base into a unary base (Nat)
-listBaseToNat : List (Fin base) -> Nat
-listBaseToNat ls = listBaseToNatHelper ls 0 0
-  where
-    listBaseToNatHelper : List (Fin base) -> Nat -> Nat -> Nat
-    listBaseToNatHelper [] index acc = acc
-    listBaseToNatHelper (y :: xs) index acc {base} = 
-      listBaseToNatHelper xs (S index) (acc + ((finToNat y) * (base `power` index)))
+notZero : Fin n -> Bool
+notZero FZ = False
+notZero _  = True
+
+listBaseToNat : List (Fin base) -> Integer
+listBaseToNat ls {base} = baseToNat (ls) 0
+  where 
+    baseToNat : List (Fin base) -> Integer -> Integer
+    baseToNat [] acc = acc
+    baseToNat (x :: xs) acc = let i = toIntegerNat $ finToNat x
+                                  ibase = toIntegerNat base
+                               in baseToNat xs (ibase * acc + i)
+
+-- ||| This in effect, transforms a list of numbers in a base into a unary base (Nat)
+-- listBaseToNat : List (Fin base) -> Nat
+-- listBaseToNat ls = listBaseToNatHelper ls 0 0
+--   where
+--     listBaseToNatHelper : List (Fin base) -> Nat -> Nat -> Nat
+--     listBaseToNatHelper [] index acc = acc
+--     listBaseToNatHelper (y :: xs) index acc {base} = 
+--       listBaseToNatHelper xs (S index) (acc + ((finToNat y) * (base `power` index)))
