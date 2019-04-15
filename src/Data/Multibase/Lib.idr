@@ -54,7 +54,7 @@ public export record MultibaseDigest (n : Nat) where
   digest : List (Fin n)
 
 ||| This probably should be in STD-lib
-export implementation (DecEq a, {y : a} -> Eq (p y)) => Eq (DPair a p) where
+(DecEq a, {y : a} -> Eq (p y)) => Eq (DPair a p) where
    (x ** pf) == (y ** pf') with (decEq x y)
      (x ** pf) == (x ** pf') | Yes Refl = pf == pf'
      (x ** pf) == (y ** pf') | No contra = False
@@ -110,23 +110,3 @@ export
 decodeMulti : String -> Either (MultibaseError Char) (b ** (MultibaseDigest b))
 decodeMulti = parseSymbols . unpack
 
-reencode : MultibaseDigest b -> String
-reencode (MkMultibaseDigest base digest) = pack $ map (`index` dictionary base) digest
-
-groupBy : Nat -> List a -> List (List a)
-groupBy len [] = []
-groupBy len xs = if length xs < len then [xs] else let (head, tail) = splitAt len xs in assert_total $ head :: groupBy len tail
-
-fromBaseToNat : List (Fin b) -> Nat
-fromBaseToNat xs {b} = snd $ foldl (\(index, sum), val => (S index, val * (b `power` index) + sum)) (Z, Z) $ map finToNat $ reverse xs
-
-export
-baseLength : Nat -> Nat
-baseLength b = toNat $ the Int $ cast (ceiling (log 256 / log (cast b)))
-
-export
-decodeFromBase : List (Fin b) -> String
-decodeFromBase xs {b} = let digitLength = baseLength b 
-                            digitList = groupBy digitLength xs 
-                            natList = map fromBaseToNat digitList in
-                            pack $ map (chr . toIntNat) natList
